@@ -1,26 +1,28 @@
-from mistralai.client import Mistral
-import os
+# llm_annote.py
 
-#api_key = os.environ["MISTRAL_API_KEY"]
-api_key = 
+import os
+from mistralai.client import Mistral
+from dotenv import load_dotenv
+
+# Charge veriable file .env
+load_dotenv()
+
+api_key = os.getenv("MISTRAL_API_KEY")
 model="mistral-small-latest"
 
 client = Mistral(api_key=api_key)
 
-def annote(text: str) -> str:
-    #Recive CV text    
+def annote(text: str, instruction: str) -> str:
 
+    # Receive a personalized text and instruction.    
     if not text.strip():
-        return "Error: Not find text. PDF empty."
+        return "Error: Content text is empty."
 
-    prompt = f"""
-    Analyze this CV and answer:
+    full_prompt = f"""
+    INSTRUCTION:
+    {instruction}
 
-    1. What are the main skills?
-    2. What is the experience level?
-    3. What are strengths and weaknesses?
-
-    CV TEXT:
+    CONTENT TO ANALYSE:
     {text}
     """
 
@@ -30,15 +32,29 @@ def annote(text: str) -> str:
             messages=[
                 {
                     "role": "user",
-                    "content": prompt
+                    "content": full_prompt
                 }
             ]
         )
         return chat_response.choices[0].message.content
     except Exception as e:
-        return f"Error to call Mistral: {e}"
+        return f"Error calling Mistral: {e}"
 
-# O bloco abaixo serve apenas para testes rápidos deste arquivo isolado
 if __name__ == "__main__":
-    test_text = "Experience: 5 years as Python Developer. Skills: Docker, AWS, Java."
-    print(annote(test_text))
+    
+    # Isolated test
+    text = """
+    Michael Johnson is a 34-year-old software developer originally from Brazil, currently living in Lisbon, Portugal.
+    He has over 10 years of experience working with Python, data engineering, and cloud platforms such as AWS and Azure.
+    João has worked for several international companies, contributing to large-scale data processing systems and machine learning pipelines.
+    
+    In his free time, he enjoys playing football, reading science fiction books, and experimenting with new programming languages.
+    He is also fluent in Portuguese and English, and has an intermediate level in Spanish.
+    
+    His contact email is joao.silva.dev@example.com and his phone number is +351 912 345 678.
+    He recently attended a tech conference in Berlin and is actively looking for new opportunities in Europe.
+    """
+
+    prompt = "Extract only the full name of the person mentioned in the text."
+
+    print(annote(text, prompt))
