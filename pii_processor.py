@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
 
     prompt_tests = [
-        #"Analyze this CV for a Web Developer position.",
+        "Analyze this CV for a Web Developer position."
         #"Analyze this CV for a DevOps position and tell us if they have the right tools."
         #"Summarize this CV in just 3 lines for a rushed recruiter."
         #"Analyze this CV and list main skills and experience level."
