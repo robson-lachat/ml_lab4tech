@@ -1,3 +1,5 @@
+# llm_annote.py
+
 import llm_mistral
 import llm_openai
 
@@ -19,8 +21,8 @@ def annote(text: str, instruction: str, provider: str = "mistral") -> str:
 
 if __name__ == "__main__":
     # Fast test: Calling them both in for a comparison!
-    texto = "The candidate is proficient in Python and Docker."
+    text = "The candidate is proficient in Python and Docker."
     obs = "Summarize in one sentence."
     
-    print("MISTRAL:", annote(texto, obs, "mistral"))
-    print("OPENAI :", annote(texto, obs, "openai"))
+    print("MISTRAL:", annote(text, obs, "mistral"))
+    print("OPENAI :", annote(text, obs, "openai"))

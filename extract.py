@@ -18,12 +18,14 @@ def extract_with_pypdf2(file_path: str) -> str:
     except Exception as e:
         print(f"Error read PDF at {file_path}: {e}")
         return ""
+
     
 if __name__ == "__main__":
     # Get directory
     base_path = os.path.dirname(os.path.abspath(__file__))
     # Get folders and files
-    file_path = os.path.join(base_path, "cv_file", "Alexandre Silva.pdf")
+    file_path = os.path.join(base_path, "cv_file", "ByungjinPark.pdf")
 
     content = extract_with_pypdf2(file_path)
+
     print(content)
