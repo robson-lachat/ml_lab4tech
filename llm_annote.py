@@ -2,8 +2,10 @@
 
 import llm_mistral
 import llm_openai
+import llm_ollama
 
-def annote(text: str, instruction: str, provider: str = "mistral") -> str:
+
+def annote(text: str, instruction: str, provider: str = "mistral", model: str = None) -> str:
     if not text.strip():
         return "Error: Content text is empty."
 
@@ -12,8 +14,12 @@ def annote(text: str, instruction: str, provider: str = "mistral") -> str:
     try:
         if provider.lower() == "mistral":
             return llm_mistral.send_request(full_prompt)
-        elif provider.lower() == "openai":
+        if provider.lower() == "openai":
             return llm_openai.send_request(full_prompt)
+        if provider.lower() == "ollama":
+            # If no template is provided, we use llama3.2 as the default.
+            m = model if model else "llama3.2"
+            return llm_ollama.send_request(full_prompt, m)
         else:
             return f"Provider {provider} not recognized."
     except Exception as e:

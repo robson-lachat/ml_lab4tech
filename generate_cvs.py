@@ -1,11 +1,12 @@
 # generate_cvs.py
 
 import os
+import time
 from datetime import datetime
 from extract import extract_with_pypdf2
 from llm_annote import annote
 
-def generate_fake_cv(job_text, match_type, provider):
+def generate_fake_cv(job_text, match_type, provider, model_name=None):
     
     prompt = f"""
     Based on the following JOB DESCRIPTION, generate a realistic fake CV in HTML format.
@@ -23,15 +24,18 @@ def generate_fake_cv(job_text, match_type, provider):
     {job_text}
     """
     
-    # Use function annote end send job text + prompt + llm
-    return annote(job_text, prompt, provider=provider)
+    # Use function annote end send job text + prompt + llm + model
+    return annote(job_text, prompt, provider=provider, model=model_name)
 
 if __name__ == "__main__":
     base_path = os.path.dirname(os.path.abspath(__file__))
     
-    # Config file and target role
-    provider_name = "mistral" # Ex: "mistal", "openai" ...
-    target_role = "FullStack_Python_Django" # Role EPFL
+    # Config provider and models
+    provider_name = "ollama" # Ex: "mistal", "openai", "ollama" ...
+    local_models = ["llama3.2", "mistral", "phi3"]
+
+    # Role EPFL
+    target_role = "FullStack_Python_Django"
 
     # 1. Extract job text (put PDF in folder /job_descriptions)
     job_pdf_name = "Spécialiste systèmes & développement Full-Stack (Python_Django) - Offre d'emploi chez EPFL - jobup.ch.pdf"
@@ -41,35 +45,51 @@ if __name__ == "__main__":
     # 2. Type CVs generate (Exercice 2)
     types_to_generate = [
         ("high_match", "High Match"),
-        ("high_match", "High Match"),
+        #("high_match", "High Match"),
         ("partial_match", "Partial Match"),
-        ("partial_match", "Partial Match"),
-        ("no_match", "No Match"),
-        ("no_match", "No Match"),
+        #("partial_match", "Partial Match"),
+        #("no_match", "No Match"),
+        #("no_match", "No Match"),
         ("no_match", "No Match")
     ]
 
     print(f"Satrting a new generation with {provider_name.upper()}...")
 
-    for i, (m_label, m_type) in enumerate(types_to_generate, 1):
-        # Generate timestamp in the requested format: 20260417_134620
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+  
+    for model in local_models:
+            print(f"\n>>> TESTING MODEL: {model.upper()} <<<")
 
-        # Assemble filename
-        filename = f"{provider_name}_{target_role}_{m_label}_{i}_{timestamp}.html"
+            for i, (m_label, m_type) in enumerate(types_to_generate, 1):
 
-        print(f"\n[{i}/7] Generating: {filename}...")
+                # MARKS THE BEGINNING
+                start_process = time.time()
 
-        html_content = generate_fake_cv(job_text, m_type, provider_name)
-        
-        # Cleaning html file
-        if "<html>" in html_content:
-            html_content = html_content[html_content.find("<html>") : html_content.find("</html>") + 7]
-        
-        # Save .html in folder cv_file
-        save_path = os.path.join(base_path, "cv_file", filename)
+                # Generate timestamp in the requested format: 20260417_134620
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-        with open(save_path, "w", encoding="utf-8") as f:
-            f.write(html_content)
+                # Assemble filename
+                filename = f"{provider_name}_{model}_{target_role}_{m_label}_{i}_{timestamp}.html"
 
-        print(f"Done! Saved at: {save_path}")
+                print(f"\n[{i}/{len(types_to_generate)}] Generating: {filename}...")
+
+                html_content = generate_fake_cv(job_text, m_type, provider_name, model_name=model)
+                
+                # Cleaning html file
+                if "<html>" in html_content:
+                    html_content = html_content[html_content.find("<html>") : html_content.find("</html>") + 7]
+                
+                # Save .html in folder cv_file
+                save_path = os.path.join(base_path, "cv_file", filename)
+
+                # MARK THE END AND CALCULATE
+                end_process = time.time()
+                duration = end_process - start_process
+                finish_time = datetime.now().strftime("%H:%M:%S")
+
+                # LOG PERFOMANCE
+                
+
+                with open(save_path, "w", encoding="utf-8") as f:
+                    f.write(html_content)
+
+                print(f"Done! Saved at: {save_path}")
