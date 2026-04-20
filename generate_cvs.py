@@ -32,7 +32,7 @@ if __name__ == "__main__":
     
     # Config provider and models
     provider_name = "ollama" # Ex: "mistal", "openai", "ollama" ...
-    local_models = ["llama3.2", "mistral", "phi3"]
+    local_models = ["llama3.2"] # "llama3.2", "mistral", "phi3"
 
     # Role EPFL
     target_role = "FullStack_Python_Django"
@@ -46,11 +46,11 @@ if __name__ == "__main__":
     types_to_generate = [
         ("high_match", "High Match"),
         #("high_match", "High Match"),
-        ("partial_match", "Partial Match"),
+        #("partial_match", "Partial Match"),
         #("partial_match", "Partial Match"),
         #("no_match", "No Match"),
         #("no_match", "No Match"),
-        ("no_match", "No Match")
+        #("no_match", "No Match")
     ]
 
     print(f"Satrting a new generation with {provider_name.upper()}...")
@@ -87,7 +87,12 @@ if __name__ == "__main__":
                 finish_time = datetime.now().strftime("%H:%M:%S")
 
                 # LOG PERFOMANCE
-                
+                print(f"▶️ Started at: {start_process}")
+                print(f"✅ Finished at: {finish_time}")
+                print(f"⏱️  Processing time: {duration:.2f} seconds")
+                print(f"📂 Saved in: {filename}")
+
+                print(f"\n--- Process Completed: {datetime.now().strftime('%H:%M:%S')} ---")
 
                 with open(save_path, "w", encoding="utf-8") as f:
                     f.write(html_content)
